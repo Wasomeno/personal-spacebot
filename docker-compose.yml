@@ -6,14 +6,19 @@ services:
     ports:
       - "19898:19898"
     environment:
-      # Instance-level settings
       SPACEBOT_DIR: /data
       SPACEBOT_DEPLOYMENT: docker
       SPACEBOT_CRON_TIMEZONE: Asia/Jakarta
 
-      # Bifrost config (used by config.toml provider)
+      # Bifrost gateway (routes to Anthropic, MiniMax, etc.)
       BIFROST_URL: ${BIFROST_URL}
       BIFROST_VIRTUAL_KEY: ${BIFROST_VIRTUAL_KEY}
+
+      # Optional channel tokens (uncomment what you use)
+      # DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      # SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
+      # SLACK_APP_TOKEN: ${SLACK_APP_TOKEN}
+      # TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
     volumes:
       - spacebot-data:/data
       - ./config.toml:/data/config.toml:ro

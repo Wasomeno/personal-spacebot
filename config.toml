@@ -1,40 +1,39 @@
 # ===============================================
-# Spacebot config.toml — Bifrost + MiniMax
+# Spacebot config.toml — Bifrost (Anthropic + MiniMax)
 # ===============================================
-# This is mounted into the container at /data/config.toml
-# Environment variables are interpolated via ${VAR} syntax
+# Bifrost handles routing to both Anthropic and MiniMax
+# Spacebot sends all LLM calls to Bifrost, Bifrost routes to the right provider
 
-# --- LLM Provider Credentials ---
-# Bifrost virtual key (from your Bifrost gateway)
+# --- LLM Provider: Bifrost Gateway ---
 [llm]
 openai_key = "env:BIFROST_VIRTUAL_KEY"
 
-# --- Routing ---
-# Tell Spacebot how to route model names to providers
-# Model "minimax" → use the "bifrost" provider below
-[defaults.routing]
-
 # --- Custom Provider: Bifrost ---
-# This connects Spacebot to your Bifrost gateway
+# Bifrost acts as an OpenAI-compatible gateway
 [[providers]]
 name = "bifrost"
-api_type = "openai_chat_completions"
+api_type = "anthropic"
 base_url = "env:BIFROST_URL"
 api_key = "env:BIFROST_VIRTUAL_KEY"
 
-# Example: route "minimax" model to bifrost provider
-# You can also set per-model routing here
+# --- Model Routing ---
+# Tell Spacebot which model name maps to which provider
+# These model names must match what you configured in Bifrost
+
+[defaults.routing]
+# Channel (user-facing) model — pick one:
+# Option A: Anthropic via Bifrost
+channel_model = "Minimax/minimax-m2.7"
+# Option B: MiniMax via Bifrost
+# channel_model = "Minimax/minimax-m2.7"
+
+# Worker (background task) model
+worker_model = "Minimax/minimax-m2.7"
 
 # --- Instance Settings ---
-[defaults]
-# Use minimax via bifrost
-channel_model = "minimax"
-worker_model = "minimax"
-
-# Cron timezone
 cron_timezone = "Asia/Jakarta"
 
-# Webhook listening port (inside container)
+# --- Web Server ---
 [server]
 port = 19898
 
@@ -52,8 +51,8 @@ app_token = "env:SLACK_APP_TOKEN"
 enabled = false
 token = "env:TELEGRAM_BOT_TOKEN"
 
-# --- Binding: Discord channel → agent ---
-# Uncomment and fill in after setting up Discord bot
+# --- Binding: connect channels to agents ---
+# Uncomment and configure after setting up a channel
 # [[bindings]]
 # agent_id = "main"
 # channel = "discord"
