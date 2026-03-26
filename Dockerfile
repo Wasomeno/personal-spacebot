@@ -66,13 +66,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     && rm -rf /var/lib/apt/lists/*
 
-# Return to spacebot user
-RUN if id spacebot &>/dev/null; then \
-        usermod -aG audio,video spacebot; \
-        USER spacebot; \
-    fi
+# Switch to spacebot user if it exists, otherwise stay root
+RUN id spacebot &>/dev/null && usermod -aG audio,video spacebot || true
 
 WORKDIR /data
+
+# Use spacebot user if it exists
+USER spacebot
 
 # Uncomment to pre-install Playwright browsers:
 # RUN npx playwright install chromium --with-deps
