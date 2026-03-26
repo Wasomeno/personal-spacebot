@@ -13,30 +13,10 @@ services:
       SPACEBOT_DIR: /data
       SPACEBOT_DEPLOYMENT: docker
       SPACEBOT_CRON_TIMEZONE: Asia/Jakarta
-
-      # Bifrost gateway (routes to Anthropic, MiniMax, etc.)
       BIFROST_URL: ${BIFROST_URL}
       BIFROST_VIRTUAL_KEY: ${BIFROST_VIRTUAL_KEY}
-
-      # Optional channel tokens (uncomment what you use)
-      # DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
-      # SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
-      # SLACK_APP_TOKEN: ${SLACK_APP_TOKEN}
-      # TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
-
-      # Webhook (for programmatic access)
       SPACEBOT_WEBHOOK_TOKEN: ${SPACEBOT_WEBHOOK_TOKEN:-hermes-orchestrator-secret}
     volumes:
       - spacebot-data:/data
-      - ./config.toml:/data/config.toml:ro
-    # shm_size: 2gb  # Uncomment if browser workers crash (Chromium needs shared memory)
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:19898/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 60s
-
-volumes:
-  spacebot-data:
-    driver: local
+      disable: true
