@@ -1,10 +1,14 @@
 services:
   spacebot:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: ghcr.io/spacedriveapp/spacebot:latest
     container_name: spacebot
     restart: unless-stopped
     ports:
       - "19898:19898"
+      - "18789:18789"
     environment:
       SPACEBOT_DIR: /data
       SPACEBOT_DEPLOYMENT: docker
@@ -19,9 +23,13 @@ services:
       # SLACK_BOT_TOKEN: ${SLACK_BOT_TOKEN}
       # SLACK_APP_TOKEN: ${SLACK_APP_TOKEN}
       # TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+
+      # Webhook (for programmatic access)
+      SPACEBOT_WEBHOOK_TOKEN: ${SPACEBOT_WEBHOOK_TOKEN:-hermes-orchestrator-secret}
     volumes:
       - spacebot-data:/data
       - ./config.toml:/data/config.toml:ro
+    # shm_size: 2gb  # Uncomment if browser workers crash (Chromium needs shared memory)
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:19898/health || exit 1"]
       interval: 30s
