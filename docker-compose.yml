@@ -1,0 +1,29 @@
+services:
+  spacebot:
+    image: ghcr.io/spacedriveapp/spacebot:latest
+    container_name: spacebot
+    restart: unless-stopped
+    ports:
+      - "19898:19898"
+    environment:
+      # Instance-level settings
+      SPACEBOT_DIR: /data
+      SPACEBOT_DEPLOYMENT: docker
+      SPACEBOT_CRON_TIMEZONE: Asia/Jakarta
+
+      # Bifrost config (used by config.toml provider)
+      BIFROST_URL: ${BIFROST_URL}
+      BIFROST_VIRTUAL_KEY: ${BIFROST_VIRTUAL_KEY}
+    volumes:
+      - spacebot-data:/data
+      - ./config.toml:/data/config.toml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:19898/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  spacebot-data:
+    driver: local

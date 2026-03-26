@@ -1,0 +1,66 @@
+# ===============================================
+# Spacebot config.toml — Bifrost + MiniMax
+# ===============================================
+# This is mounted into the container at /data/config.toml
+# Environment variables are interpolated via ${VAR} syntax
+
+# --- LLM Provider Credentials ---
+# Bifrost virtual key (from your Bifrost gateway)
+[llm]
+openai_key = "env:BIFROST_VIRTUAL_KEY"
+
+# --- Routing ---
+# Tell Spacebot how to route model names to providers
+# Model "minimax" → use the "bifrost" provider below
+[defaults.routing]
+
+# --- Custom Provider: Bifrost ---
+# This connects Spacebot to your Bifrost gateway
+[[providers]]
+name = "bifrost"
+api_type = "openai_chat_completions"
+base_url = "env:BIFROST_URL"
+api_key = "env:BIFROST_VIRTUAL_KEY"
+
+# Example: route "minimax" model to bifrost provider
+# You can also set per-model routing here
+
+# --- Instance Settings ---
+[defaults]
+# Use minimax via bifrost
+channel_model = "minimax"
+worker_model = "minimax"
+
+# Cron timezone
+cron_timezone = "Asia/Jakarta"
+
+# Webhook listening port (inside container)
+[server]
+port = 19898
+
+# --- Channels (enable what you need) ---
+[messaging.discord]
+enabled = false
+token = "env:DISCORD_BOT_TOKEN"
+
+[messaging.slack]
+enabled = false
+token = "env:SLACK_BOT_TOKEN"
+app_token = "env:SLACK_APP_TOKEN"
+
+[messaging.telegram]
+enabled = false
+token = "env:TELEGRAM_BOT_TOKEN"
+
+# --- Binding: Discord channel → agent ---
+# Uncomment and fill in after setting up Discord bot
+# [[bindings]]
+# agent_id = "main"
+# channel = "discord"
+# guild_id = "YOUR_GUILD_ID"
+# channel_ids = ["YOUR_CHANNEL_ID"]
+
+# --- Default Agent ---
+[[agents]]
+id = "main"
+default = true
